@@ -1,6 +1,6 @@
 <template>
   <label :for="id">
-    <input type="radio" :id="id" :checked="isChecked" @change="onChange" />
+    <input type="checkbox" :id="id" v-model="model" />
     {{ title }}
   </label>
 </template>
@@ -16,8 +16,27 @@ export default {
     title: {
       type: String,
       require: true
+    },
+    // checked: {
+    //   type: Array,
+    //   required: true
+    // },
+    boxKey: {
+      type: String,
+      required: true
     }
-  }
+  },
+  computed: {
+    model: {
+      get() {
+        return this.value;
+      },
+      set() {
+        this.$emit("input", this.boxKey);
+      }
+    }
+  },
+  methods: {}
 };
 </script>
 

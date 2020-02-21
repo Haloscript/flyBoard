@@ -1,7 +1,7 @@
 const flightType = {
   direct: "Только прямые",
   luggage: "Только с багажом",
-  returned: "Только возвратные"
+  refundable: "Только возвратные"
 };
 const airlines = {
   KC: "Air Astana",

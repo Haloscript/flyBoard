@@ -1,27 +1,50 @@
 <template>
   <div>
-    <div class="filter-header"></div>
+    <div class="filter-header">{{ header }}</div>
     <div class="filter-body">
+      <!-- eslint-disable -->
       <radioInput
+        v-if="type === 'radio'"
         v-for="(val, keyName) in filteredData"
         :id="keyName"
         :title="val"
         :radioKey="keyName"
         :key="keyName"
         v-model="flightType"
-      ></radioInput>
+      />
+      <checkBoxInput
+        v-if="type === 'checkbox'"
+        v-for="(val, keyName) in filteredData"
+        :id="keyName"
+        :key="keyName"
+        :boxKey="keyName"
+        :title="val"
+        v-model="airlines"
+      />
+      <!-- eslint-enable -->
     </div>
   </div>
 </template>
 
 <script>
 import radio from "../imputs/radio";
+import checkBox from "../imputs/checkBox";
 import { mapGetters, mapMutations } from "vuex";
+
 export default {
   name: "searchFilter",
-  props: { filteredData: Object, type: String, name: String },
+  props: {
+    filteredData: {
+      type: Object,
+      require: true
+    },
+    type: { type: String, require: true },
+    name: { type: String, require: true },
+    header: { type: String, require: true }
+  },
   components: {
-    radioInput: radio
+    radioInput: radio,
+    checkBoxInput: checkBox
   },
   computed: {
     ...mapGetters(["getSelectedFilterData"]),
@@ -30,7 +53,7 @@ export default {
         return this.getSelectedFilterData("flightType");
       },
       set(val) {
-        this.setSelectedFilter({ type: "flightType", data: val });
+        this.setSelectedFilterFlightType({ data: val });
       }
     },
     airlines: {
@@ -38,12 +61,16 @@ export default {
         return this.getSelectedFilterData("airlines");
       },
       set(val) {
-        this.setSelectedFilter({ type: "airlines", data: val });
+        this.setSelectedFilterAirlines({ data: val });
       }
     }
   },
   methods: {
-    ...mapMutations(["setSelectedFilter"])
+    ...mapMutations([
+      "setSelectedFilter",
+      "setSelectedFilterFlightType",
+      "setSelectedFilterAirlines"
+    ])
   }
 };
 </script>
