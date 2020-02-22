@@ -85,6 +85,7 @@ export default {
   width: 240px;
   background: #f5f5f5;
   border-radius: 4px;
+  max-height: 400px;
   & .filter-header {
     span {
       font-style: normal;
@@ -93,6 +94,10 @@ export default {
       line-height: 20px;
       color: #202123;
     }
+  }
+  & .filter-body {
+    overflow: auto;
+    height: 320px;
   }
 }
 </style>

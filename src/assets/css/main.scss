@@ -1,6 +1,7 @@
 @import "fonts";
 body {
   font-family: "OpenSans", sans-serif;
+  background: #D7D7D7;
 }
 h1,
 h2,
@@ -16,4 +17,25 @@ select {
 }
 .mb-12 {
   margin-bottom: 12px;
+}
+
+li {
+  list-style-type: none; /* Убираем маркеры */
+}
+ul {
+  margin-left: 0; /* Отступ слева в браузере IE и Opera */
+  padding-left: 0; /* Отступ слева в браузере Firefox, Safari, Chrome */
+}
+
+.paginate-container{
+  width: 100px;
+  display: flex;
+  flex-direction: row;
+  margin: 0 auto;
+  & li {
+    margin-right: 6px;
+    background: #FFFFFF;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.15);
+    border-radius: 2px;
+  }
 }

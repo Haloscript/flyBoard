@@ -1,31 +1,37 @@
 <template>
   <div class="main-container">
     <div>
-      <searchFilter
-        header="Опции тарифа"
-        name="flightType"
-        type="radio"
-        :filteredData="flightTypeList"
-      />
-      <searchFilter
-        class="mr-12"
-        header="Авиокомпании"
-        name="airlines"
-        type="checkbox"
-        :filteredData="airlinesList"
-      />
-      <searchResult
-        v-for="flight in airFlights"
-        :flightItem="flight"
-        :key="flight.id"
-      />
+      <div class="content">
+        <div class="content__left">
+          <searchFilter
+            header="Опции тарифа"
+            name="flightType"
+            type="radio"
+            :filteredData="flightTypeList"
+          />
+          <searchFilter
+            class="mr-12"
+            header="Авиокомпании"
+            name="airlines"
+            type="checkbox"
+            :filteredData="airlinesList"
+          />
+        </div>
+        <div class="content__center">
+          <searchResult
+            v-for="flight in airFlights"
+            :flightItem="flight"
+            :key="flight.id"
+          />
+        </div>
+      </div>
       <paginate
         v-model="selectedPage"
         :page-count="pageCount"
         :click-handler="paginated"
         :prev-text="'Prev'"
         :next-text="'Next'"
-        :container-class="'className'"
+        :container-class="'paginate-container'"
       />
     </div>
   </div>
@@ -88,5 +94,10 @@ export default {
 .main-container {
   width: 1140px;
   margin: 0 auto;
+  & .content {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
 }
 </style>
