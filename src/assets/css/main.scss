@@ -1,0 +1,19 @@
+@import "fonts";
+body {
+  font-family: "OpenSans", sans-serif;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+p,
+button,
+input,
+span,
+select {
+  font-family: inherit;
+}
+.mb-12 {
+  margin-bottom: 12px;
+}

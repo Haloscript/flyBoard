@@ -22,7 +22,8 @@ const state = {
 const getters = {
   getFilterData: state => name => state.filterStaticData[name],
   getSelectedFilterData: state => name => state.selectFilter[name],
-  getPaginate: state => name => state.paginate[name]
+  getPaginate: state => name => state.paginate[name],
+  getAirFlights: state => state.airFlights
 };
 
 const mutations = {
@@ -55,6 +56,11 @@ const actions = {
   },
   paginated({ state, commit }) {
     FLIGHTS.paginate(state.paginate.selectedPage);
+    commit("setAirFlights", { data: FLIGHTS.sendFlights });
+    commit("setPaginate", { type: "pageCount", data: FLIGHTS.pageCount });
+  },
+  startFiltration({ state, commit }) {
+    FLIGHTS.filtration(state.selectFilter);
     commit("setAirFlights", { data: FLIGHTS.sendFlights });
     commit("setPaginate", { type: "pageCount", data: FLIGHTS.pageCount });
   }

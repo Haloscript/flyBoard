@@ -6,11 +6,19 @@ export class AirFlightsService {
   }
 
   get sendFlights() {
-    return this._filtredFlights;
+    return this._sendFlights;
   }
 
   set sendFlights(value) {
-    this._filtredFlights = value;
+    this._sendFlights = value;
+  }
+
+  get beforeFiltration() {
+    return this._beforeFiltration;
+  }
+
+  set beforeFiltration(value) {
+    this._beforeFiltration = value;
   }
 
   get pageCount() {
@@ -21,7 +29,11 @@ export class AirFlightsService {
     this._pageCount = value;
   }
   _objectMaping(obj) {
-    Object.entries(obj).forEach(([key]) => String(key));
+    let returnedKey = "";
+    Object.entries(obj).forEach(([key]) => {
+      returnedKey = key;
+    });
+    return returnedKey;
   }
   _arrayCompare = function(array1, array2) {
     return array1
@@ -34,39 +46,60 @@ export class AirFlightsService {
    * @param selectedPage
    * @param elementsPerPage
    */
-  paginate(selectedPage, elementsPerPage = 4, flights = this.flights) {
+  paginate(selectedPage, elementsPerPage = 5, flights = this.flights) {
     const indexMin = selectedPage * elementsPerPage;
     const indexMax = indexMin + elementsPerPage;
-    this.sendFlights = flights
-      .filter((x, index) => index >= indexMin && index < indexMax)
-      .sort();
-    console.log(this.flights);
-    this.pageCount = Math.floor(this.flights.length / elementsPerPage);
+    console.log("flights", flights);
+    if (flights.length > elementsPerPage)
+      this.sendFlights = flights.filter(
+        (x, index) => index >= indexMin && index < indexMax
+      );
+    else this.sendFlights = flights;
+    this.pageCount = Math.floor(flights.length / elementsPerPage);
     console.log(selectedPage, this.sendFlights, this.pageCount);
   }
 
   filtration(selectFilter) {
     let readyFilter = [];
+    this.beforeFiltration = this.flights;
+    if (selectFilter.flightType !== "") {
+      switch (selectFilter.flightType) {
+        case "luggage":
+          readyFilter.push(
+            ...this.beforeFiltration.filter(
+              item => this._objectMaping(item.services) !== "0PC"
+            )
+          );
 
-    this.flights.forEach(item => {
-      if (selectFilter.airlines.length > 0)
-        if (selectFilter.airlines.indexOf(item.itineraries[0].carrier) >= 1)
-          readyFilter.push(item);
-      if (
-        selectFilter.flightType === "luggage" &&
-        this._objectMaping(item.services) !== "0PC"
-      )
-        readyFilter.push(item);
-      if (
-        selectFilter.flightType === "direct" &&
-        item.itineraries[0].segments.length < 2
-      )
-        readyFilter.push(item);
-      if (selectFilter.flightType === "refundable" && item.refundable)
-        readyFilter.push(item);
-    });
-    //   // selectFilter.flightType;
-    //   // selectFilter.airlines;
+          break;
+        case "direct":
+          readyFilter.push(
+            ...this.beforeFiltration.filter(
+              item => item.itineraries[0][0].segments.length < 2
+            )
+          );
+          break;
+        case "refundable":
+          readyFilter.push(
+            ...this.beforeFiltration.filter(item => item.refundable)
+          );
+          break;
+      }
+      this.beforeFiltration = readyFilter;
+    } else this.beforeFiltration = this.flights;
+
+    if (selectFilter.airlines.length > 0) {
+      readyFilter = [];
+      readyFilter.push(
+        ...this.beforeFiltration.filter(
+          item =>
+            selectFilter.airlines.indexOf(item.itineraries[0][0].carrier) >= 0
+        )
+      );
+      this.beforeFiltration = readyFilter;
+    } else if (readyFilter.length === 0) this.beforeFiltration = this.flights;
+    console.log("this.beforeFiltration", this.beforeFiltration);
+    this.paginate(1, 4, this.beforeFiltration);
   }
 }
 // direct: "Только прямые",2

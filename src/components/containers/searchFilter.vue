@@ -1,6 +1,8 @@
 <template>
-  <div>
-    <div class="filter-header">{{ header }}</div>
+  <div class="filter-container mb-12">
+    <div class="filter-header mb-12">
+      <span>{{ header }}</span>
+    </div>
     <div class="filter-body">
       <!-- eslint-disable -->
       <radioInput
@@ -29,7 +31,7 @@
 <script>
 import radio from "../imputs/radio";
 import checkBox from "../imputs/checkBox";
-import { mapGetters, mapMutations } from "vuex";
+import { mapGetters, mapMutations, mapActions } from "vuex";
 
 export default {
   name: "searchFilter",
@@ -54,6 +56,7 @@ export default {
       },
       set(val) {
         this.setSelectedFilterFlightType({ data: val });
+        this.startFiltration();
       }
     },
     airlines: {
@@ -62,6 +65,7 @@ export default {
       },
       set(val) {
         this.setSelectedFilterAirlines({ data: val });
+        this.startFiltration();
       }
     }
   },
@@ -70,9 +74,25 @@ export default {
       "setSelectedFilter",
       "setSelectedFilterFlightType",
       "setSelectedFilterAirlines"
-    ])
+    ]),
+    ...mapActions(["startFiltration"])
   }
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.filter-container {
+  width: 240px;
+  background: #f5f5f5;
+  border-radius: 4px;
+  & .filter-header {
+    span {
+      font-style: normal;
+      font-weight: bold;
+      font-size: 14px;
+      line-height: 20px;
+      color: #202123;
+    }
+  }
+}
+</style>

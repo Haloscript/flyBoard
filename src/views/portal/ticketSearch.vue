@@ -1,25 +1,33 @@
 <template>
-  <div>
-    <searchFilter
-      header="Опции тарифа"
-      name="flightType"
-      type="radio"
-      :filteredData="flightTypeList"
-    />
-    <searchFilter
-      header="Авиокомпании"
-      name="airlines"
-      type="checkbox"
-      :filteredData="airlinesList"
-    />
-    <paginate
-      v-model="selectedPage"
-      :page-count="pageCount"
-      :click-handler="paginated"
-      :prev-text="'Prev'"
-      :next-text="'Next'"
-      :container-class="'className'"
-    />
+  <div class="main-container">
+    <div>
+      <searchFilter
+        header="Опции тарифа"
+        name="flightType"
+        type="radio"
+        :filteredData="flightTypeList"
+      />
+      <searchFilter
+        class="mr-12"
+        header="Авиокомпании"
+        name="airlines"
+        type="checkbox"
+        :filteredData="airlinesList"
+      />
+      <searchResult
+        v-for="flight in airFlights"
+        :flightItem="flight"
+        :key="flight.id"
+      />
+      <paginate
+        v-model="selectedPage"
+        :page-count="pageCount"
+        :click-handler="paginated"
+        :prev-text="'Prev'"
+        :next-text="'Next'"
+        :container-class="'className'"
+      />
+    </div>
   </div>
 </template>
 
@@ -31,14 +39,15 @@ export default {
   name: "ticketSearch",
   components: {
     searchFilter,
-    paginate: Paginate
+    paginate: Paginate,
+    searchResult: () => import("../../components/containers/searchResult")
   },
   created() {
     this.getFilterDataOnFile();
     this.paginated();
   },
   computed: {
-    ...mapGetters(["getFilterData", "getPaginate"]),
+    ...mapGetters(["getFilterData", "getPaginate", "getAirFlights"]),
     flightTypeList: {
       get() {
         return this.getFilterData("flightTypeList");
@@ -61,6 +70,11 @@ export default {
       set(value) {
         this.setPaginate({ type: "selectedPage", data: value });
       }
+    },
+    airFlights: {
+      get() {
+        return this.getAirFlights;
+      }
     }
   },
   methods: {
@@ -70,4 +84,9 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style lang="scss" scoped>
+.main-container {
+  width: 1140px;
+  margin: 0 auto;
+}
+</style>

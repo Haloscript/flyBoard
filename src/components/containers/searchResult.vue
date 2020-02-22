@@ -1,8 +1,18 @@
-<template> </template>
+<template>
+  <div v-if="flightItem">
+    <i></i>
+  </div>
+</template>
 
 <script>
 export default {
-  name: "serchResult.container"
+  name: "serchResult.container",
+  props: {
+    flightItem: {
+      type: Object,
+      require: true
+    }
+  }
 };
 </script>
 
