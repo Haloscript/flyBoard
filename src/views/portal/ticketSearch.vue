@@ -16,6 +16,10 @@
             type="checkbox"
             :filteredData="airlinesList"
           />
+          <blueLink
+            title="Сбросить все фильтры"
+            @blueLinkClick="clearAllFilters"
+          />
         </div>
         <div class="content__center">
           <searchResult
@@ -40,12 +44,14 @@
 <script>
 import searchFilter from "../../components/containers/searchFilter";
 import Paginate from "vuejs-paginate";
+import blueLink from "../../components/buttons/blueLink";
 import { mapActions, mapGetters, mapMutations } from "vuex";
 export default {
   name: "ticketSearch",
   components: {
     searchFilter,
     paginate: Paginate,
+    blueLink,
     searchResult: () => import("../../components/containers/searchResult")
   },
   created() {
@@ -84,7 +90,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(["getFilterDataOnFile", "paginated"]),
+    ...mapActions(["getFilterDataOnFile", "paginated", "clearAllFilters"]),
     ...mapMutations(["setPaginate"])
   }
 };
@@ -98,6 +104,10 @@ export default {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    & .content__left {
+      display: flex;
+      flex-direction: column;
+    }
   }
 }
 </style>

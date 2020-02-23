@@ -1,6 +1,6 @@
 <template>
   <label class="checkbox" :for="id">
-    <input type="checkbox" :id="id" v-model="model" />
+    <input type="checkbox" :id="id" v-model="model" value="" />
     {{ title }}
     <span class="checkbox__checkmark"></span>
   </label>
@@ -18,19 +18,18 @@ export default {
       type: String,
       require: true
     },
-    // checked: {
-    //   type: Array,
-    //   required: true
-    // },
     boxKey: {
       type: String,
       required: true
+    },
+    status: {
+      type: Boolean
     }
   },
   computed: {
     model: {
       get() {
-        return this.value;
+        return this.status;
       },
       set() {
         this.$emit("input", this.boxKey);

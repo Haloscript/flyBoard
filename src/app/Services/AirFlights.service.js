@@ -47,16 +47,18 @@ export class AirFlightsService {
    * @param elementsPerPage
    */
   paginate(selectedPage, elementsPerPage = 5, flights = this.flights) {
-    const indexMin = selectedPage * elementsPerPage;
-    const indexMax = indexMin + elementsPerPage;
-    console.log("flights", flights);
-    if (flights.length > elementsPerPage)
-      this.sendFlights = flights.filter(
-        (x, index) => index >= indexMin && index < indexMax
-      );
-    else this.sendFlights = flights;
-    this.pageCount = Math.floor(flights.length / elementsPerPage);
-    console.log(selectedPage, this.sendFlights, this.pageCount);
+    const start = elementsPerPage * (selectedPage - 1);
+    const end = elementsPerPage * selectedPage;
+    let paginateData =
+      this.beforeFiltration === undefined ? flights : this.beforeFiltration;
+    this.pageCount = Math.floor(paginateData.length / elementsPerPage);
+    this.sendFlights = {
+      *[Symbol.iterator]() {
+        for (let i = start; i < paginateData.length && i < end; i++) {
+          yield paginateData[i];
+        }
+      }
+    };
   }
 
   filtration(selectFilter) {
@@ -98,7 +100,6 @@ export class AirFlightsService {
       );
       this.beforeFiltration = readyFilter;
     } else if (readyFilter.length === 0) this.beforeFiltration = this.flights;
-    console.log("this.beforeFiltration", this.beforeFiltration);
     this.paginate(1, 4, this.beforeFiltration);
   }
 }

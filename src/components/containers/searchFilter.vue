@@ -22,6 +22,7 @@
         :boxKey="keyName"
         :title="val"
         v-model="airlines"
+        :status="getStatus(keyName)"
       />
       <!-- eslint-enable -->
     </div>
@@ -75,7 +76,10 @@ export default {
       "setSelectedFilterFlightType",
       "setSelectedFilterAirlines"
     ]),
-    ...mapActions(["startFiltration"])
+    ...mapActions(["startFiltration"]),
+    getStatus(keyName) {
+      return this.airlines.indexOf(keyName) >= 0;
+    }
   }
 };
 </script>
@@ -85,7 +89,7 @@ export default {
   width: 240px;
   background: #f5f5f5;
   border-radius: 4px;
-  max-height: 400px;
+  padding: 12px 0 0 12px;
   & .filter-header {
     span {
       font-style: normal;
@@ -97,7 +101,6 @@ export default {
   }
   & .filter-body {
     overflow: auto;
-    height: 320px;
   }
 }
 </style>

@@ -4,48 +4,100 @@
       <div class="_middle-block">
         <span class="logo"
           ><img
-            src=" https://aviata.kz/static/airline-logos/80x80/KC.png"
+            :src="
+              `https://aviata.kz/static/airline-logos/80x80/${flightItem.itineraries[0][0].carrier}.png`
+            "
             alt=""
-          />Air Astana</span
+          />{{ flightItem.itineraries[0][0].carrier_name }}</span
         >
         <div class="date">
-          <span>25 ноя, вс</span>
-          <h2>23:25</h2>
+          <span>{{
+            getPrettyDate(flightItem.itineraries[0][0].segments[0].dep_time)
+              .date
+          }}</span>
+          <h2>
+            {{
+              getPrettyDate(flightItem.itineraries[0][0].segments[0].dep_time)
+                .time
+            }}
+          </h2>
         </div>
         <div class="flight-time">
           <div class="flight-location-and-time">
-            <h2 class="location start">ALA</h2>
-            <span class="time">4 ч 20 м</span>
-            <h2 class="location end">TSE</h2>
+            <h2 class="location start">
+              {{ flightItem.itineraries[0][0].segments[0].origin_code }}
+            </h2>
+            <span class="time">{{
+              getCurrentSegmetsTime(flightItem.itineraries[0][0])
+            }}</span>
+            <h2 class="location end">
+              {{
+                flightItem.itineraries[0][0].segments[
+                  flightItem.itineraries[0][0].segments.length - 1
+                ].origin_code
+              }}
+            </h2>
           </div>
           <div class="_line">
             <div class="elipse-group">
               <div class="_elipse _start"></div>
-              <div class="_elipse _moddle"></div>
+              <!-- eslint-disable -->
+              <div v-if="segmentsSecond"
+                v-for="dots in flightItem.itineraries[0][0].segments"
+                class="_elipse _moddle"
+                :key="dots.dest_code"
+              >
+              </div>
+              <div v-if="!segmentsSecond  && !segmentsOne"  class="_elipse _moddle"></div>
               <div class="_elipse _end"></div>
             </div>
           </div>
-          <h1>через Шымкент, 1 ч 50 м</h1>
+
+          <h1 v-if="segmentsOne">прямой рейс</h1>
+          <h1 v-else>
+            через
+            <span v-if="segmentsSecond" v-for="item in flightItem.itineraries[0][0].segments"
+              >{{ item.dest }}, {{waitingTime(item.segments)}}</span
+            >
+            <span v-if="!segmentsSecond"
+              >{{ flightItem.itineraries[0][0].segments[0].dest }}, {{waitingTime(flightItem.itineraries[0][0].segments)}}</span
+            >
+          </h1>
         </div>
+        <!-- eslint-enable -->
         <div class="date">
-          <span>25 ноя, вс</span>
-          <h2>23:25</h2>
+          <span>{{
+            getPrettyDate(
+              flightItem.itineraries[0][0].segments[
+                flightItem.itineraries[0][0].segments.length - 1
+              ].arr_time
+            ).date
+          }}</span>
+          <h2>
+            {{
+              getPrettyDate(
+                flightItem.itineraries[0][0].segments[
+                  flightItem.itineraries[0][0].segments.length - 1
+                ].arr_time
+              ).time
+            }}
+          </h2>
         </div>
       </div>
       <div class="_bottom-block">
-        <span>Детали перелета</span>
-        <span>Условия тарифа</span>
-        <div class="non-refundeble">
+        <blueLink title="Детали перелета" />
+        <blueLink title="Условия тарифа" />
+        <div v-if="noRefundable" class="non-refundeble">
           <img :src="require('../../assets/img/non-refundeble.svg')" alt="" />
           <span>невозвратный</span>
         </div>
       </div>
     </div>
     <div class="flights__rigth">
-      <h1 class="">590 240 ₸</h1>
+      <h1 class="">{{ flightItem.price }} &#8376;</h1>
       <selectButton text="Выбрать" />
       <h2>Цена за всех пассажиров</h2>
-      <div class="services">
+      <div v-if="noServices(flightItem.services)" class="services">
         <span class="none__services">Нет багажа</span>
         <linkButton text="+ Добавить багаж" />
       </div>
@@ -56,16 +108,75 @@
 <script>
 import greenButton from "../buttons/greenButton";
 import linkButton from "../buttons/linkButton";
+import blueLink from "../buttons/blueLink";
 export default {
   name: "searchResult",
   components: {
     selectButton: greenButton,
-    linkButton
+    linkButton,
+    blueLink
   },
   props: {
     flightItem: {
       type: Object,
       require: true
+    }
+  },
+  data() {
+    return {
+      segmentsData: null
+    };
+  },
+  computed: {
+    noRefundable: function() {
+      return !this.flightItem.refundable;
+    },
+    segmentsOne: function() {
+      return this.flightItem.itineraries[0][0].segments.length === 1;
+    },
+    segmentsSecond: function() {
+      return this.flightItem.itineraries[0][0].segments.stops > 1;
+    }
+  },
+  methods: {
+    getPrettyDate: function(fullDate) {
+      return {
+        date: `
+        ${fullDate.split(" ")[0]}
+        ${fullDate.split(" ")[1]}
+        ${fullDate.split(" ")[2]}
+        `,
+        time: fullDate.split(" ")[3]
+      };
+    },
+    getCurrentSegmetsTime(itineraries) {
+      let currentHours =
+          new Date(itineraries.arr_date).getHours() -
+          new Date(itineraries.dep_date).getHours(),
+        currentMinutes =
+          new Date(itineraries.arr_date).getMinutes() -
+          new Date(itineraries.dep_date).getMinutes();
+      return `${Math.abs(currentHours)} ч ${
+        Math.abs(currentMinutes) === 0 ? "" : Math.abs(currentMinutes) + " м"
+      }`;
+    },
+    waitingTime(segments) {
+      let firstDate = "",
+        secondDate = "";
+      segments.forEach((seg, index) => {
+        firstDate = firstDate === "" ? seg.arr_time_iso : firstDate;
+        secondDate = segments.length - 1 === index ? seg.dep_time_iso : "";
+      });
+      let currentHours =
+          new Date(firstDate).getHours() - new Date(secondDate).getHours(),
+        currentMinutes =
+          new Date(firstDate).getMinutes() - new Date(secondDate).getMinutes();
+      return `${Math.abs(currentHours)} ч ${
+        Math.abs(currentMinutes) === 0 ? "" : Math.abs(currentMinutes) + " м"
+      }`;
+    },
+    noServices(item) {
+      return Object.keys(item).indexOf("0PC") >= 0 ? true : false;
     }
   }
 };
@@ -183,16 +294,6 @@ export default {
       display: flex;
       flex-direction: row;
       justify-content: start;
-      & span {
-        font-style: normal;
-        font-weight: normal;
-        font-size: 12px;
-        line-height: 16px;
-        margin-right: 23px;
-        color: #7284e4;
-        cursor: pointer;
-        border-bottom: 1px dashed #7284e4;
-      }
       & .non-refundeble {
         display: flex;
         flex-direction: row;
@@ -230,6 +331,7 @@ export default {
       line-height: 16px;
       text-align: center;
       color: #707276;
+      padding: 8px 0 12px 0;
     }
     & .services {
       display: flex;

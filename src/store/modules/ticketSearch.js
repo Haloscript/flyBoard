@@ -36,6 +36,7 @@ const mutations = {
   setSelectedFilterFlightType(state, { data }) {
     state.selectFilter.flightType = data;
   },
+
   setSelectedFilterAirlines(state, { data }) {
     if (state.selectFilter.airlines.indexOf(data) >= 0)
       state.selectFilter.airlines.splice(
@@ -43,6 +44,9 @@ const mutations = {
         1
       );
     else state.selectFilter.airlines.push(data);
+  },
+  changeSelectedFilterAirlines(state, { data }) {
+    state.selectFilter.airlines = data;
   },
   setPaginate(state, { type, data }) {
     state.paginate[type] = data;
@@ -60,6 +64,13 @@ const actions = {
     commit("setPaginate", { type: "pageCount", data: FLIGHTS.pageCount });
   },
   startFiltration({ state, commit }) {
+    FLIGHTS.filtration(state.selectFilter);
+    commit("setAirFlights", { data: FLIGHTS.sendFlights });
+    commit("setPaginate", { type: "pageCount", data: FLIGHTS.pageCount });
+  },
+  clearAllFilters({ commit }) {
+    commit("setSelectedFilterFlightType", { data: "" });
+    commit("changeSelectedFilterAirlines", { data: [] });
     FLIGHTS.filtration(state.selectFilter);
     commit("setAirFlights", { data: FLIGHTS.sendFlights });
     commit("setPaginate", { type: "pageCount", data: FLIGHTS.pageCount });
